@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sports Club Capstone Project</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+	.profile-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 8px; vertical-align: middle; }
+	.notification { padding: 10px; border-radius: 4px; margin-bottom: 12px; display: none; }
+	.notification.success { background: #d4edda; color: #155724; }
+	.notification.error { background: #f8d7da; color: #721c24; }
+	.pagination { margin: 16px 0; text-align: center; }
+	.pagination button { margin: 0 4px; padding: 4px 10px; }
+	body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+	header { background: #0077b6; color: #fff; padding: 30px 0 15px 0; text-align: center; }
+	nav { background: #023e8a; padding: 10px 0; text-align: center; }
+	nav a { color: #fff; text-decoration: none; margin: 0 18px; font-weight: 500; font-size: 18px; transition: color 0.2s; }
+	nav a:hover { color: #90e0ef; }
+	.container { max-width: 900px; margin: 30px auto; background: #fff; border-radius: 8px; -webkit-box-shadow: 0 2px 8px rgba(0,0,0,0.07); box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 30px; }
+	section { margin-bottom: 40px; }
+	h2 { color: #0077b6; margin-bottom: 18px; }
+	.skills-list { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-flex-wrap: wrap; -ms-flex-wrap: wrap; flex-wrap: wrap; gap: 12px; }
+	.skill { background: #e0f7fa; color: #0077b6; padding: 8px 18px; border-radius: 20px; font-size: 16px; }
+	.error { color: #c0392b; }
+	.success { color: green; }
+	.controls { margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+	.controls input, .controls select, .controls button { margin-right: 8px; padding: 12px; font-size: 1rem; border-radius: 6px; }
+	ul { list-style: none; padding: 0; }
+	li { padding: 10px; border-bottom: 1px solid #eee; }
+	li:last-child { border-bottom: none; }
+	.max { background: #d4edda; color: #155724; font-weight: bold; }
+	.edit-row input { width: 100px; margin-right: 4px; }
+	.contact-form input, .contact-form textarea { width: 100%; padding: 10px; margin-bottom: 14px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px; }
+	.contact-form button { background: #0077b6; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+	.contact-form button:hover { background: #023e8a; }
+	footer { text-align: center; padding: 18px 0; background: #0077b6; color: #fff; margin-top: 40px; }
+	.notification { padding: 10px; border-radius: 4px; margin-bottom: 12px; display: none; }
+	.notification.success { background: #d4edda; color: #155724; }
+	.notification.error { background: #f8d7da; color: #721c24; }
+	.pagination { margin: 16px 0; text-align: center; }
+	.pagination button { margin: 0 4px; padding: 10px 18px; font-size: 1rem; border-radius: 6px; }
+	@media (max-width: 700px) {
+	  .container { padding: 8px; }
+	  nav a { font-size: 15px; margin: 0 6px; }
+	  .controls { flex-direction: column; }
+	  .controls input, .controls select, .controls button { width: 100%; margin-bottom: 8px; font-size: 1.1rem; min-height: 44px; }
+	  .skills-list { flex-direction: column; gap: 6px; }
+	  .profile-pic { width: 32px; height: 32px; }
+	  .pagination button { width: 100%; margin: 4px 0; }
+	}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Sports Club Management</h1>
+		<p>Capstone Project: Member Registration, Management & Contact</p>
+	</header>
+	<nav>
+	<a href="#home" onclick="showSection('home')">Home</a>
+	<a href="#dashboard" onclick="showSection('dashboard')">Dashboard</a>
+	<a href="#members" onclick="showSection('members')">Members</a>
+	<a href="#events" onclick="showSection('events')">Events</a>
+	<a href="#contact" onclick="showSection('contact')">Contact</a>
+	<button id="darkModeBtn" style="float:right;margin-right:20px;">🌙</button>
+	</nav>
+	<div class="container">
+		<section id="dashboard-section" style="display:none;">
+			<h2>Dashboard</h2>
+			<div id="dashboard-stats">
+				<p><strong>Total Members:</strong> <span id="stat-total-members">0</span></p>
+				<p><strong>Top Sport:</strong> <span id="stat-top-sport">-</span></p>
+				<p><strong>Highest Score:</strong> <span id="stat-highest-score">-</span></p>
+			</div>
+		</section>
+		<section id="events-section" style="display:none;">
+			<h2>Upcoming Events</h2>
+			<form id="add-event-form" class="controls">
+				<input type="text" id="event-title" placeholder="Event Title" required>
+				<input type="date" id="event-date" required>
+				<button type="submit">Add Event</button>
+			</form>
+			<ul id="events-list"></ul>
+			<p id="event-error" class="error"></p>
+		</section>
+		<section id="home-section">
+			<h2>Welcome to Our Sports Club</h2>
+			<p>
+				Our club is dedicated to promoting fitness, teamwork, and sportsmanship. Register as a member, manage your profile, and join our events!
+			</p>
+			<div class="skills-list">
+				<span class="skill">Online Registration</span>
+				<span class="skill">Edit & Delete Members</span>
+				<span class="skill">Search & Filter</span>
+				<span class="skill">Score Tracking</span>
+				<span class="skill">Responsive Design</span>
+				<span class="skill">API Integration</span>
+			</div>
+		</section>
+		<section id="members-section" style="display:none;">
+			<div id="notification" class="notification"></div>
+			<h2>Member Management</h2>
+			<div class="controls">
+				<input type="text" id="search" placeholder="Search by name..." aria-label="Search by name">
+				<select id="sport-filter"><option value="">All Sports</option></select>
+				<button onclick="loadMembers()" type="button">Refresh</button>
+				<button onclick="exportCSV()" type="button">Export CSV</button>
+				<button onclick="window.print()" type="button">Print</button>
+			</div>
+			<form id="add-form" class="controls">
+				<input type="text" id="add-name" placeholder="Name" required aria-label="Name">
+				<input type="text" id="add-sport" placeholder="Sport" required aria-label="Sport">
+				<input type="number" id="add-score" placeholder="Score" required aria-label="Score">
+				<input type="file" id="add-pic" accept="image/*" aria-label="Profile Picture">
+				<button type="submit" aria-label="Add Member">Add Member</button>
+			</form>
+			<ul id="members-list"></ul>
+			<div class="pagination" id="pagination"></div>
+			<p id="max-score"></p>
+			<p id="error" class="error"></p>
+		</section>
+		<section id="contact-section" style="display:none;">
+			<h2>Contact Us</h2>
+			<form class="contact-form" id="contactForm">
+				<input type="text" id="contactName" placeholder="Your Name" required aria-label="Your Name">
+				<input type="email" id="contactEmail" placeholder="Your Email" required aria-label="Your Email">
+				<textarea id="contactMessage" rows="4" placeholder="Your Message" required aria-label="Your Message"></textarea>
+				<button type="submit" aria-label="Send Message">Send Message</button>
+				<div id="contactResult"></div>
+			</form>
+		</section>
+	</div>
+	<footer>
+	&copy; 2025 Sports Club. All rights reserved.
+	</footer>
+	<script>
+	// --- Notification Banner ---
+	function showNotification(msg, type) {
+		var n = document.getElementById('notification');
+		n.textContent = msg;
+		n.className = 'notification ' + type;
+		n.style.display = 'block';
+		setTimeout(() => { n.style.display = 'none'; }, 2500);
+	}
+	// --- Dark Mode Toggle ---
+	const darkModeBtn = document.getElementById('darkModeBtn');
+	let darkMode = false;
+	darkModeBtn.onclick = function() {
+		darkMode = !darkMode;
+		document.body.style.background = darkMode ? '#222' : '#f4f4f4';
+		document.body.style.color = darkMode ? '#f4f4f4' : '#222';
+		document.querySelector('.container').style.background = darkMode ? '#333' : '#fff';
+		darkModeBtn.textContent = darkMode ? '☀️' : '🌙';
+	};
+	// --- Event Management (local for demo) ---
+	let events = [];
+	function renderEvents() {
+		const list = document.getElementById('events-list');
+		list.innerHTML = '';
+		if (events.length === 0) {
+			list.innerHTML = '<li>No upcoming events.</li>';
+			return;
+		}
+		events.forEach((ev, idx) => {
+			const li = document.createElement('li');
+			li.textContent = `${ev.title} - ${ev.date}`;
+			li.innerHTML += ` <button onclick="deleteEvent(${idx})">Delete</button>`;
+			list.appendChild(li);
+		});
+	}
+	document.getElementById('add-event-form').onsubmit = function(e) {
+		e.preventDefault();
+		const title = document.getElementById('event-title').value.trim();
+		const date = document.getElementById('event-date').value;
+		if (title && date) {
+			events.push({ title, date });
+			renderEvents();
+			this.reset();
+		}
+	};
+	function deleteEvent(idx) {
+		events.splice(idx, 1);
+		renderEvents();
+	}
+	// --- Dashboard Statistics ---
+	function updateDashboard() {
+		// Total members
+		document.getElementById('stat-total-members').textContent = members.length;
+		// Top sport
+		if (members.length === 0) {
+			document.getElementById('stat-top-sport').textContent = '-';
+			document.getElementById('stat-highest-score').textContent = '-';
+			return;
+		}
+		const sportCounts = {};
+		let highestScore = members[0].score;
+		let maxMember = members[0];
+		members.forEach(m => {
+			sportCounts[m.sport] = (sportCounts[m.sport] || 0) + 1;
+			if (m.score > highestScore) {
+				highestScore = m.score;
+				maxMember = m;
+			}
+		});
+		const topSport = Object.entries(sportCounts).sort((a,b) => b[1]-a[1])[0][0];
+		document.getElementById('stat-top-sport').textContent = topSport;
+		document.getElementById('stat-highest-score').textContent = `${maxMember.name} (${maxMember.score})`;
+	}
+	// --- Navigation ---
+	function showSection(section) {
+		document.getElementById('home-section').style.display = section === 'home' ? '' : 'none';
+		document.getElementById('members-section').style.display = section === 'members' ? '' : 'none';
+		document.getElementById('contact-section').style.display = section === 'contact' ? '' : 'none';
+	}
+	// --- API URL (using mockapi.io for demo) ---
+	const API_URL = 'https://64f7e7e69d775408495348b2.mockapi.io/api/v1/members';
+	let members = [];
+	let currentPage = 1;
+	const pageSize = 5;
+	let editingId = null;
+
+	function loadMembers() {
+		document.getElementById('error').textContent = '';
+		fetch(API_URL)
+			.then(res => res.json())
+			.then(data => {
+				members = data;
+				renderMembers();
+				updateDashboard();
+				updateSportFilter();
+			})
+			.catch(err => {
+				document.getElementById('error').textContent = 'Error fetching data: ' + err;
+				showNotification('Failed to load members', 'error');
+			});
+	}
+
+	function renderMembers() {
+		const list = document.getElementById('members-list');
+		list.innerHTML = '';
+		const search = document.getElementById('search').value.toLowerCase();
+		const sportFilter = document.getElementById('sport-filter').value;
+		let filtered = members.filter(m =>
+			m.name.toLowerCase().includes(search) && (sportFilter === '' || m.sport === sportFilter)
+		);
+		// Pagination
+		const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+		if (currentPage > totalPages) currentPage = totalPages;
+		const start = (currentPage - 1) * pageSize;
+		const end = start + pageSize;
+		const pageMembers = filtered.slice(start, end);
+		if (filtered.length === 0) {
+			list.innerHTML = '<li>No members found.</li>';
+			document.getElementById('max-score').textContent = '';
+			document.getElementById('pagination').innerHTML = '';
+			return;
+		}
+		let maxMember = filtered.reduce((max, m) => m.score > max.score ? m : max, filtered[0]);
+		pageMembers.forEach(member => {
+			const li = document.createElement('li');
+			let pic = member.pic ? `<img src="${member.pic}" class="profile-pic">` : '';
+			if (editingId === member.id) {
+				li.className = 'edit-row';
+				li.innerHTML = `
+					${pic}<input id="edit-name" value="${member.name}">
+					<input id="edit-sport" value="${member.sport}">
+					<input id="edit-score" type="number" value="${member.score}">
+					<input type="file" id="edit-pic" accept="image/*">
+					<button onclick="saveEdit('${member.id}')">Save</button>
+					<button onclick="cancelEdit()">Cancel</button>
+				`;
+			} else {
+				li.innerHTML = `${pic}${member.name} (${member.sport}) - Score: ${member.score} <small>Joined: ${member.joinDate || '-'}</small>`;
+				if (member.id === maxMember.id) li.classList.add('max');
+				li.innerHTML += ` <button onclick="editMember('${member.id}')">Edit</button> <button onclick="deleteMember('${member.id}')">Delete</button>`;
+			}
+			list.appendChild(li);
+		});
+		// Pagination controls
+		let pag = '';
+		for (let i = 1; i <= totalPages; i++) {
+			pag += `<button onclick="gotoPage(${i})"${i === currentPage ? ' style=\"font-weight:bold\"' : ''}>${i}</button>`;
+		}
+		document.getElementById('pagination').innerHTML = pag;
+		document.getElementById('max-score').textContent = `Highest Score: ${maxMember.name} (${maxMember.score})`;
+		updateDashboard();
+	function gotoPage(page) {
+		currentPage = page;
+		renderMembers();
+	}
+	function updateSportFilter() {
+		const select = document.getElementById('sport-filter');
+		const sports = Array.from(new Set(members.map(m => m.sport)));
+		select.innerHTML = '<option value="">All Sports</option>' + sports.map(s => `<option value="${s}">${s}</option>`).join('');
+	}
+	}
+
+	document.getElementById('add-form').onsubmit = function(e) {
+		e.preventDefault();
+		const name = document.getElementById('add-name').value.trim();
+		const sport = document.getElementById('add-sport').value.trim();
+		const score = parseInt(document.getElementById('add-score').value);
+		const picInput = document.getElementById('add-pic');
+		let joinDate = new Date().toISOString().split('T')[0];
+		if (picInput.files && picInput.files[0]) {
+			const reader = new FileReader();
+			reader.onload = function(e2) {
+				const pic = e2.target.result;
+				addMember({ name, sport, score, pic, joinDate });
+			};
+			reader.readAsDataURL(picInput.files[0]);
+		} else {
+			addMember({ name, sport, score, joinDate });
+		}
+		function addMember(data) {
+			fetch(API_URL, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			})
+			.then(res => res.json())
+			.then(() => {
+				document.getElementById('add-form').reset();
+				showNotification('Member added!', 'success');
+				loadMembers();
+			})
+			.catch(err => {
+				document.getElementById('error').textContent = err;
+				showNotification('Failed to add member', 'error');
+			});
+		}
+	};
+
+	function editMember(id) {
+		editingId = id;
+		renderMembers();
+	}
+	function cancelEdit() {
+		editingId = null;
+		renderMembers();
+	}
+	function saveEdit(id) {
+		const name = document.getElementById('edit-name').value.trim();
+		const sport = document.getElementById('edit-sport').value.trim();
+		const score = parseInt(document.getElementById('edit-score').value);
+		const picInput = document.getElementById('edit-pic');
+		let update = (pic) => {
+			fetch(`${API_URL}/${id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(pic ? { name, sport, score, pic } : { name, sport, score })
+			})
+			.then(res => res.json())
+			.then(() => {
+				editingId = null;
+				showNotification('Member updated!', 'success');
+				loadMembers();
+			})
+			.catch(err => {
+				document.getElementById('error').textContent = err;
+				showNotification('Failed to update member', 'error');
+			});
+		};
+		if (picInput && picInput.files && picInput.files[0]) {
+			const reader = new FileReader();
+			reader.onload = function(e2) { update(e2.target.result); };
+			reader.readAsDataURL(picInput.files[0]);
+		} else {
+			update();
+		}
+	}
+	function deleteMember(id) {
+		if (!confirm('Are you sure you want to delete this member?')) return;
+		fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+			.then(res => {
+				if (!res.ok) throw new Error('Failed to delete member');
+				showNotification('Member deleted!', 'success');
+				loadMembers();
+			})
+			.catch(err => {
+				document.getElementById('error').textContent = err;
+				showNotification('Failed to delete member', 'error');
+			});
+	// Export members to CSV
+	function exportCSV() {
+		let csv = 'Name,Sport,Score,Join Date\n';
+		members.forEach(m => {
+			csv += `${m.name},${m.sport},${m.score},${m.joinDate || ''}\n`;
+		});
+		const blob = new Blob([csv], { type: 'text/csv' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'members.csv';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+	// Sport filter event
+	document.getElementById('sport-filter').onchange = function() {
+		currentPage = 1;
+		renderMembers();
+	};
+	}
+	// Debounced search for better performance
+	let searchTimeout;
+	document.getElementById('search').oninput = function() {
+		clearTimeout(searchTimeout);
+		searchTimeout = setTimeout(renderMembers, 250);
+	};
+	// --- Contact form submission (demo only) ---
+	document.getElementById('contactForm').addEventListener('submit', function(e) {
+		e.preventDefault();
+		const resultDiv = document.getElementById('contactResult');
+		resultDiv.style.color = '#0077b6';
+		resultDiv.textContent = 'Thank you for contacting us! We will get back to you soon.';
+		this.reset();
+	});
+	// Show home by default
+	showSection('home');
+	renderEvents();
+	</script>
+</body>
+</html>
